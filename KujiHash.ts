@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { BigintToBuffer } from './BigintBuffer';
 
 export default class KujiHash {
   private readonly hmacCreator: () => crypto.Hmac;
@@ -21,5 +22,9 @@ export default class KujiHash {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   hmacObject(object: any): string {
     return this.hmacString(JSON.stringify(object));
+  }
+
+  hmacBigInt(object: bigint, objectBytes: number): string {
+    return this.hmacBuffer(BigintToBuffer(object, objectBytes));
   }
 }

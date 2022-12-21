@@ -5,7 +5,7 @@
     }
   },
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020",
     "lib": [],
     "allowJs": true,
     "skipLibCheck": true,
