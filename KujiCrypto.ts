@@ -12,23 +12,38 @@ export default class KujiCrypto {
     this.deciperCreator = () => crypto.createDecipheriv(algorithm, key, this.iv);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  encrypt(object: any): string {
+  get cryptoIv() : string {
+    return this.iv.toString('hex');
+  }
+
+  encryptBuffer(object: Buffer): string {
     const ciper = this.ciperCreator();
-    let crypted = ciper.update(Buffer.from(JSON.stringify(object)));
+    let crypted = ciper.update(object);
     crypted = Buffer.concat([crypted, ciper.final()]);
     return crypted.toString('base64url');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  decrypt(cryptedText: string): any {
-    const decipher = this.deciperCreator();
-    let decrypted = decipher.update(Buffer.from(cryptedText, 'base64url'));
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return JSON.parse(decrypted.toString('utf-8'));
+  encryptString(object: string): string {
+    return this.encryptBuffer(Buffer.from(object));
   }
 
-  cryptoIv() {
-    return this.iv.toString('hex');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  encryptObject(object: any): string {
+    return this.encryptString(JSON.stringify(object));
+  }
+
+  decryptBuffer(cryptedText: string): Buffer {
+    const decipher = this.deciperCreator();
+    const decrypted = decipher.update(Buffer.from(cryptedText, 'base64url'));
+    return Buffer.concat([decrypted, decipher.final()]);
+  }
+
+  decryptString(cryptedText: string): string {
+    return this.decryptBuffer(cryptedText).toString('utf-8');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  decryptObject(cryptedText: string): any {
+    return JSON.parse(this.decryptString(cryptedText));
   }
 }

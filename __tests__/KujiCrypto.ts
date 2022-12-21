@@ -17,40 +17,40 @@ describe('KujiCrypto', () => {
     });
   });
 
-  describe('encrypt', () => {
+  describe('#encryptObject', () => {
     it('objectを渡すと暗号化できること', () => {
       const kuji = new KujiCrypto('password', 'SALT');
-      const encryptedString = kuji.encrypt({id: 0});
+      const encryptedString = kuji.encryptObject({id: 0});
       expect(base64url.toBuffer(encryptedString)).toBeInstanceOf(Buffer);
     });
   });
 
-  describe('decrypt', () => {
+  describe('#decryptObject', () => {
     it('encrypt結果を渡すと復号できること', () => {
       const kuji = new KujiCrypto('password', 'SALT');
-      const encryptedString = kuji.encrypt({id: 0});
-      expect(kuji.decrypt(encryptedString)).toEqual({id: 0});
+      const encryptedString = kuji.encryptObject({id: 0});
+      expect(kuji.decryptObject(encryptedString)).toEqual({id: 0});
     });
   });
 
   describe('#cryptoIv', () => {
     it('自動生成されたiv(Hex)を取得できること', () => {
       const kuji = new KujiCrypto('password', 'SALT');
-      expect(kuji.cryptoIv()).toMatch(/^[0-9a-f]{32}$/);
+      expect(kuji.cryptoIv).toMatch(/^[0-9a-f]{32}$/);
     });
 
     it('constructorで指定したivを取得できること', () => {
       const iv = '9510ed5c321945212a57adc857bb42d8';
       const kuji = new KujiCrypto('password', 'SALT', iv);
-      expect(kuji.cryptoIv()).toBe(iv);
+      expect(kuji.cryptoIv).toBe(iv);
     });
 
     it('取得したivで復号できること', () => {
       const kuji1 = new KujiCrypto('password', 'SALT');
-      const iv = kuji1.cryptoIv();
-      const encryptedString = kuji1.encrypt({id: 0});
+      const iv = kuji1.cryptoIv;
+      const encryptedString = kuji1.encryptObject({id: 0});
       const kuji2 = new KujiCrypto('password', 'SALT', iv);
-      expect(kuji2.decrypt(encryptedString)).toEqual({id: 0});
+      expect(kuji2.decryptObject(encryptedString)).toEqual({id: 0});
     });
   });
 });
